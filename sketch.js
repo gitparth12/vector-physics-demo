@@ -14,7 +14,7 @@ let planetNames = [
   "saturn",
   "uranus",
   "neptune",
-  "pluto"
+  "pluto",
 ];
 
 // Sliders for playing around with values
@@ -29,9 +29,7 @@ let hintText;
 
 function preload() {
   for (let name of planetNames) {
-    textures.push(
-      loadImage("data/" + name + ".jpg")
-    );
+    textures.push(loadImage("data/" + name + ".jpg"));
   }
 }
 
@@ -44,11 +42,7 @@ function setup() {
   createUI();
 
   for (let i = 0; i < 5; i++) {
-    spawnBall(
-      random(-100, 100),
-      random(-100, 100),
-      random(-100, 100)
-    );
+    spawnBall(random(-100, 100), random(-100, 100), random(-100, 100));
   }
 }
 
@@ -57,7 +51,6 @@ function windowResized() {
 }
 
 function draw() {
-
   // Dark cinematic background
   background(5, 8, 15);
 
@@ -73,18 +66,11 @@ function draw() {
   ambientLight(
     lightStrength * 0.12,
     lightStrength * 0.12,
-    lightStrength * 0.16
+    lightStrength * 0.16,
   );
 
   // Main front light
-  pointLight(
-    lightStrength,
-    lightStrength,
-    lightStrength,
-    0,
-    -300,
-    400
-  );
+  pointLight(lightStrength, lightStrength, lightStrength, 0, -300, 400);
 
   // Blue rim light
   pointLight(
@@ -93,7 +79,7 @@ function draw() {
     lightStrength,
     -500,
     100,
-    -200
+    -200,
   );
 
   // Warm secondary light
@@ -103,7 +89,7 @@ function draw() {
     lightStrength * 0.4,
     500,
     -100,
-    200
+    200,
   );
 
   // Better material response
@@ -133,41 +119,27 @@ function draw() {
 function mousePressed() {
   if (uiHovered || keyIsDown(SHIFT)) return;
 
-  spawnBall(
-    mouseX - width / 2,
-    mouseY - height / 2,
-    random(-100, 100)
-  );
+  spawnBall(mouseX - width / 2, mouseY - height / 2, random(-100, 100));
 }
 
 function keyPressed() {
-  if (key === 'd') {
+  if (key === "d") {
     balls = [];
   }
 
-  if (key === 'g') {
-    Ball.gravityEnabled =
-      !Ball.gravityEnabled;
+  if (key === "g") {
+    Ball.gravityEnabled = !Ball.gravityEnabled;
   }
 }
 
 function spawnBall(x, y, z) {
   let radius = spawnSlider.value();
 
-  let speed = createVector(
-    random(-6, 6),
-    random(-6, 6),
-    random(-6, 6)
-  );
+  let speed = createVector(random(-6, 6), random(-6, 6), random(-6, 6));
 
   let tex = random(textures);
 
-  let ball = new Ball(
-    createVector(x, y, z),
-    speed,
-    radius,
-    tex
-  );
+  let ball = new Ball(createVector(x, y, z), speed, radius, tex);
 
   balls.push(ball);
 }
@@ -178,7 +150,6 @@ class Box {
   }
 
   display() {
-
     push();
 
     stroke(120, 160);
@@ -194,11 +165,9 @@ class Box {
 }
 
 class Ball {
-
   static gravityEnabled = false;
 
   constructor(pos, vel, radius, tex) {
-
     this.pos = pos;
     this.vel = vel;
 
@@ -215,14 +184,13 @@ class Ball {
     this.angularVel = createVector(
       random(-0.02, 0.02),
       random(-0.02, 0.02),
-      random(-0.02, 0.02)
+      random(-0.02, 0.02),
     );
 
     this.rotation = createVector();
   }
 
   move(dt) {
-
     // Optional gravity
     if (Ball.gravityEnabled) {
       this.vel.y += gravitySlider.value() * dt;
@@ -231,9 +199,7 @@ class Ball {
     // Smooth drag
     this.vel.mult(1 - dragSlider.value());
 
-    this.pos.add(
-      p5.Vector.mult(this.vel, dt)
-    );
+    this.pos.add(p5.Vector.mult(this.vel, dt));
 
     this.rotation.add(this.angularVel);
 
@@ -243,7 +209,6 @@ class Ball {
   }
 
   wallCollisions() {
-
     let half = this.boxSize / 2;
 
     // Restitution
@@ -284,14 +249,9 @@ class Ball {
   }
 
   display() {
-
     push();
 
-    translate(
-      this.pos.x,
-      this.pos.y,
-      this.pos.z
-    );
+    translate(this.pos.x, this.pos.y, this.pos.z);
 
     rotateX(this.rotation.x);
     rotateY(this.rotation.y);
@@ -310,48 +270,32 @@ class Ball {
 }
 
 function handleCollisions() {
-
   for (let i = 0; i < balls.length; i++) {
-
     for (let j = i + 1; j < balls.length; j++) {
-
       let a = balls[i];
       let b = balls[j];
 
-      let normal =
-        p5.Vector.sub(b.pos, a.pos);
+      let normal = p5.Vector.sub(b.pos, a.pos);
 
       let distance = normal.mag();
 
-      let minDistance =
-        a.radius + b.radius;
+      let minDistance = a.radius + b.radius;
 
       if (distance < minDistance) {
-
         normal.normalize();
 
         // Positional correction
-        let overlap =
-          minDistance - distance;
+        let overlap = minDistance - distance;
 
-        let correction =
-          p5.Vector.mult(
-            normal,
-            overlap / 2
-          );
+        let correction = p5.Vector.mult(normal, overlap / 2);
 
         a.pos.sub(correction);
         b.pos.add(correction);
 
         // Relative velocity
-        let relativeVelocity =
-          p5.Vector.sub(
-            b.vel,
-            a.vel
-          );
+        let relativeVelocity = p5.Vector.sub(b.vel, a.vel);
 
-        let speed =
-          relativeVelocity.dot(normal);
+        let speed = relativeVelocity.dot(normal);
 
         // Ignore separating collisions
         if (speed > 0) continue;
@@ -359,79 +303,39 @@ function handleCollisions() {
         // Restitution
         let restitution = restitutionSlider.value();
 
-        let impulse =
-          -(1 + restitution) * speed;
+        let impulse = -(1 + restitution) * speed;
 
-        impulse /=
-          (1 / a.mass) +
-          (1 / b.mass);
+        impulse /= 1 / a.mass + 1 / b.mass;
 
-        let impulseVector =
-          p5.Vector.mult(
-            normal,
-            impulse
-          );
+        let impulseVector = p5.Vector.mult(normal, impulse);
 
-        a.vel.sub(
-          p5.Vector.mult(
-            impulseVector,
-            1 / a.mass
-          )
-        );
+        a.vel.sub(p5.Vector.mult(impulseVector, 1 / a.mass));
 
-        b.vel.add(
-          p5.Vector.mult(
-            impulseVector,
-            1 / b.mass
-          )
-        );
+        b.vel.add(p5.Vector.mult(impulseVector, 1 / b.mass));
 
         // Add spin from tangential movement
-        let tangent =
-          createVector(
-            -normal.y,
-            normal.x,
-            normal.z
-          );
+        let tangent = createVector(-normal.y, normal.x, normal.z);
 
         tangent.normalize();
 
-        let spinForce =
-          relativeVelocity.dot(tangent);
+        let spinForce = relativeVelocity.dot(tangent);
 
-        a.angularVel.add(
-          p5.Vector.mult(
-            tangent,
-            spinForce * 0.002
-          )
-        );
+        a.angularVel.add(p5.Vector.mult(tangent, spinForce * 0.002));
 
-        b.angularVel.sub(
-          p5.Vector.mult(
-            tangent,
-            spinForce * 0.002
-          )
-        );
+        b.angularVel.sub(p5.Vector.mult(tangent, spinForce * 0.002));
 
         // Visual rolling spin from friction
         let friction = frictionSlider.value();
 
         // Relative tangential motion
-        let tangentVelocity =
-          relativeVelocity.copy();
+        let tangentVelocity = relativeVelocity.copy();
 
         tangentVelocity.sub(
-          p5.Vector.mult(
-            normal,
-            relativeVelocity.dot(normal)
-          )
+          p5.Vector.mult(normal, relativeVelocity.dot(normal)),
         );
 
         // Convert sliding into angular velocity
-        let spin =
-          tangentVelocity.copy().mult(
-            friction * 0.05
-          );
+        let spin = tangentVelocity.copy().mult(friction * 0.05);
 
         a.angularVel.add(spin);
 
@@ -443,7 +347,6 @@ function handleCollisions() {
 
 // Create UI for sliders -> this is not the best looking code but it works for demonstration purposes
 function createUI() {
-
   let panel = createDiv();
 
   panel.mouseOver(() => {
@@ -474,15 +377,13 @@ function createUI() {
 
   createP("Gravity").parent(panel);
 
-  gravitySlider =
-    createSlider(0, 1, 0, 0.01);
+  gravitySlider = createSlider(0, 1, 0, 0.01);
 
   gravitySlider.parent(panel);
 
   createP("Restitution (bounciness)").parent(panel);
 
-  restitutionSlider =
-    createSlider(0.5, 1.2, 0.92, 0.01);
+  restitutionSlider = createSlider(0.5, 1.2, 0.92, 0.01);
 
   restitutionSlider.parent(panel);
 
@@ -494,22 +395,19 @@ function createUI() {
 
   createP("Collision Friction").parent(panel);
 
-  frictionSlider =
-    createSlider(0, 1, 0.15, 0.01);
+  frictionSlider = createSlider(0, 1, 0.15, 0.01);
 
   frictionSlider.parent(panel);
 
   createP("Light Intensity").parent(panel);
 
-  lightSlider =
-    createSlider(0, 255, 255, 1);
+  lightSlider = createSlider(0, 255, 255, 1);
 
   lightSlider.parent(panel);
 
   createP("Spawn Radius").parent(panel);
 
-  spawnSlider =
-    createSlider(10, 50, 25, 1);
+  spawnSlider = createSlider(10, 50, 25, 1);
 
   spawnSlider.parent(panel);
 
@@ -518,17 +416,10 @@ function createUI() {
   button.parent(panel);
 
   button.mousePressed(() => {
-
-    spawnBall(
-      random(-100, 100),
-      random(-100, 100),
-      random(-100, 100)
-    );
-
+    spawnBall(random(-100, 100), random(-100, 100), random(-100, 100));
   });
 
-  let clearButton =
-    createButton("Clear Balls");
+  let clearButton = createButton("Clear Balls");
 
   clearButton.parent(panel);
 
@@ -536,9 +427,7 @@ function createUI() {
     balls = [];
   });
 
-  hintText = createDiv(
-  "Hold SHIFT + Drag to rotate camera"
-);
+  hintText = createDiv("Hold SHIFT + Drag to rotate camera");
 
   hintText.style("position", "absolute");
 
@@ -560,3 +449,4 @@ function createUI() {
 
   hintText.style("backdrop-filter", "blur(6px)");
 }
+

@@ -99,7 +99,7 @@ http://localhost:8000
 
 GitHub Pages:
 
-- (add your deployed link here)
+- https://gitparth12.github.io/vector-physics-demo/
 
 ---
 
